@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Auth;
+namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreUserRequest;
@@ -10,9 +10,6 @@ use Illuminate\Support\Facades\Hash;
 
 class RegisterController extends Controller
 {
-    /**
-     * Handle the incoming request.
-     */
     public function __invoke(StoreUserRequest $request)
     {
         $registerUserData = $request->validated();
@@ -23,11 +20,11 @@ class RegisterController extends Controller
             'password' => Hash::make($registerUserData['password']),
         ]);
 
-        $user->assignRole('guest');
+        $user->assignRole('admin');
 
         return response()->json([
-            'message' => 'User Guest Created ',
-            'status' => 'Success'
+            'message' => 'User Created ',
+            'status' => 'success'
         ], 200);
     }
 }
