@@ -22,6 +22,7 @@ class GroundController extends Controller
      */
     public function fetchAllData()
     {
+        
         // Fetch data using leftJoins
         $groundData = DB::table('detail_tanah')
             ->leftJoin('marker_tanah', 'detail_tanah.id', '=', 'marker_tanah.detail_tanah_id')

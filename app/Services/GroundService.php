@@ -12,7 +12,7 @@
     use Illuminate\Support\Facades\Auth;
     use Haruncpi\LaravelIdGenerator\IdGenerator;
     use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Storage;
+    use Illuminate\Support\Facades\Storage;
 
     class GroundService
     {
