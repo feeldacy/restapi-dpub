@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\statusTanah;
 use App\Http\Requests\StorestatusTanahRequest;
 use App\Http\Requests\UpdatestatusTanahRequest;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\Request;
 
 class StatusTanahController extends Controller
 {
@@ -51,7 +53,7 @@ class StatusTanahController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdatestatusTanahRequest $request, statusTanah $statusTanah)
+    public function update(Request $request, statusTanah $statusTanah)
     {
         //
     }
@@ -62,5 +64,14 @@ class StatusTanahController extends Controller
     public function destroy(statusTanah $statusTanah)
     {
         //
+    }
+
+    public function getAllStatusTanah(): JsonResponse
+    {
+        $data = statusTanah::all(); // Fetch all records
+        return response()->json([
+            'success' => true,
+            'data' => $data
+        ], 200);
     }
 }

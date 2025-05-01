@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\statusKepemilikan;
 use App\Http\Requests\StorestatusKepemilikanRequest;
 use App\Http\Requests\UpdatestatusKepemilikanRequest;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\Request;
 
 class StatusKepemilikanController extends Controller
 {
@@ -51,7 +53,7 @@ class StatusKepemilikanController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdatestatusKepemilikanRequest $request, statusKepemilikan $statusKepemilikan)
+    public function update(Request $request, statusKepemilikan $statusKepemilikan)
     {
         //
     }
@@ -62,5 +64,14 @@ class StatusKepemilikanController extends Controller
     public function destroy(statusKepemilikan $statusKepemilikan)
     {
         //
+    }
+
+    public function getAllStatusKepemilikan(): JsonResponse
+    {
+        $data = statusKepemilikan::all(); // Fetch all records
+        return response()->json([
+            'success' => true,
+            'data' => $data
+        ], 200);
     }
 }

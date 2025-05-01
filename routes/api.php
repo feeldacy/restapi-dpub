@@ -12,13 +12,17 @@ use App\Http\Controllers\TipeTanahController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
+Route::get('/user', function (Request $request) {
+    $user = $request->user();
+
     return response()->json([
-        'id' => $request->user()->id,
-        'name' => $request->user()->name,
-        'roles' => $request->user()->getRoleNames(), // dari spatie/laravel-permission
+        'id' => $user->id,
+        'name' => $user->name,
+        'email' => $user->email,
+        'roles' => $user->getRoleNames()
     ]);
-});
+
+})->middleware('auth:sanctum');
 
 Route::post('/register/guest', RegisterController::class);
 Route::post('/register/admin', AdminRegisterController::class);
@@ -41,6 +45,11 @@ Route::middleware(['auth:sanctum', 'role:admin|superAdmin'])->group(function () 
     Route::post('/create/tipe-tanah', [TipeTanahController::class, 'store']);
     Route::patch('/update-tipe-tanah/{id}', [TipeTanahController::class, 'updateTipeTanah']);
     Route::get('/get/tipe-tanah', [TipeTanahController::class, 'getAllTipeTanah']);
+    Route::get('/get/status-tanah', [StatusTanahController::class, 'getAllStatusTanah']);
+    Route::get('/get/status-kepemilikan', [StatusKepemilikanController::class, 'getAllStatusKepemilikan']);
 });
 
+Route::get('/test', function(){
+    return ['Java', 'PHP'];
+});
 

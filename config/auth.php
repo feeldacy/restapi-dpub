@@ -42,7 +42,7 @@ return [
         ],
 
         'api' => [
-            'driver' => 'token', // atau 'jwt' kalau pakai tymon/jwt-auth
+            'driver' => 'sanctum', // atau 'jwt' kalau pakai tymon/jwt-auth
             'provider' => 'users',
             'hash' => false,
         ],

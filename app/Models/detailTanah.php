@@ -19,7 +19,9 @@ class detailTanah extends Model
         'status_kepemilikan_id',
         'status_tanah_id',
         'tipe_tanah_id',
-        'alamat_id'
+        'alamat_id',
+        'added_by',
+        'updated_by'
     ];
 
     public $incrementing = false;
@@ -39,6 +41,14 @@ class detailTanah extends Model
 
     public function alamatTanah(){
         return $this->belongsTo(AlamatTanah::class, 'alamat_id');
+    }
+
+    public function addedBy(){
+        return $this->belongsTo(User::class, 'added_by');
+    }
+
+    public function updatedBy(){
+        return $this->belongsTo(User::class, 'updated_by');
     }
 
     public function fotoTanah(){

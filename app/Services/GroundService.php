@@ -8,7 +8,8 @@
     use App\Models\markerTanah;
     use App\Models\polygonTanah;
     use App\Models\sertifikatTanah;
-    use Illuminate\Support\Facades\DB;
+use App\Models\User;
+use Illuminate\Support\Facades\DB;
     use Illuminate\Support\Facades\Auth;
     use Haruncpi\LaravelIdGenerator\IdGenerator;
     use Illuminate\Support\Facades\Log;
@@ -28,6 +29,7 @@
                 $detailTanahID = IdGenerator::generate(['table' => 'detail_tanah', 'length' => 8, 'prefix' => 'DT-']);
                 $markerTanahID = IdGenerator::generate(['table' => 'marker_tanah', 'length' => 8, 'prefix' => 'MT-']);
                 $polygonTanahID = IdGenerator::generate(['table' => 'polygon_tanah', 'length' => 8, 'prefix' => 'PT-']);
+                $user = auth('api')->user();
 
                 // Menyimpan alamat tanah
                 $alamatTanah = AlamatTanah::create([
