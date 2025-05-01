@@ -11,7 +11,7 @@ use Spatie\Permission\Traits\HasRoles;
 class tipeTanah extends Model
 {
     /** @use HasFactory<\Database\Factories\TipeTanahFactory> **/
-    use HasFactory, HasApiTokens;
+    use HasFactory, HasApiTokens, SoftDeletes;
 
     protected $table ='tipe_tanah';
 
