@@ -4,6 +4,7 @@ use App\Http\Controllers\Admin\RegisterController as AdminRegisterController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\LogoutController;
 use App\Http\Controllers\Auth\RegisterController;
+use App\Http\Controllers\UserController;
 use App\Http\Controllers\GroundController;
 use App\Http\Controllers\StatusKepemilikanController;
 use App\Http\Controllers\StatusTanahController;
@@ -29,15 +30,15 @@ Route::post('/register/superAdmin', SuperAdminRegisterController::class);
 
 Route::post('/login', LoginController::class);
 Route::post('/logout', LogoutController::class)->middleware('auth:sanctum');
-
+Route::get('/get/ground', [GroundController::class, 'fetchAllData'])->middleware('auth:sanctum');
+Route::get('/get/ground/{id}', [GroundController::class, 'show'])->middleware('auth:sanctum');
+Route::get('/get/admin', [UserController::class, 'index'])->middleware('auth:sanctum', 'role:superAdmin');
 
 
 Route::middleware(['auth:sanctum', 'role:admin|superAdmin'])->group(function () {
     Route::post('/create/ground', [GroundController::class, 'store']);
     Route::patch('/update/ground/{id}', [GroundController::class, 'update']);
     Route::delete('/delete/ground/{id}', [GroundController::class, 'destroy']);
-    Route::get('/get/ground', [GroundController::class, 'fetchAllData']);
-    Route::get('/get/ground/{id}', [GroundController::class, 'show']);
     Route::get('/get/deleted-ground', [GroundController::class, 'fetchDeletedData']);
     Route::post('/create/tipe-tanah', [TipeTanahController::class, 'store']);
     Route::patch('/update/tipe-tanah/{id}', [TipeTanahController::class, 'updateTipeTanah']);

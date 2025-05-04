@@ -29,7 +29,7 @@ use Illuminate\Support\Facades\DB;
                 $detailTanahID = IdGenerator::generate(['table' => 'detail_tanah', 'length' => 8, 'prefix' => 'DT-']);
                 $markerTanahID = IdGenerator::generate(['table' => 'marker_tanah', 'length' => 8, 'prefix' => 'MT-']);
                 $polygonTanahID = IdGenerator::generate(['table' => 'polygon_tanah', 'length' => 8, 'prefix' => 'PT-']);
-                $user = auth('api')->user();
+                $user = auth('api')->user()->id;
 
                 // Menyimpan alamat tanah
                 $alamatTanah = AlamatTanah::create([
@@ -49,6 +49,7 @@ use Illuminate\Support\Facades\DB;
                     'status_kepemilikan_id' => $data['status_kepemilikan_id'],
                     'status_tanah_id' => $data['status_tanah_id'],
                     'tipe_tanah_id' => $data['tipe_tanah_id'],
+                    'added_by' => $user
                 ]);
 
                 // Menyimpan marker tanah
@@ -119,6 +120,9 @@ use Illuminate\Support\Facades\DB;
                 Log::info('Data yang diterima:', $data);
                 Log::info('Mulai memperbarui data tanah', ['id' => $id]);
 
+                // Mengambil data user
+                $user = auth('api')->user()->id;
+
                 // Cari Detail Tanah berdasarkan ID
                 $detailTanah = DetailTanah::findOrFail($id);
 
@@ -137,6 +141,7 @@ use Illuminate\Support\Facades\DB;
                     'status_kepemilikan_id' => $data['status_kepemilikan_id'],
                     'status_tanah_id' => $data['status_tanah_id'],
                     'tipe_tanah_id' => $data['tipe_tanah_id'],
+                    'updated_by' => $user
                 ]);
 
                 // Update Marker Tanah
@@ -213,6 +218,7 @@ use Illuminate\Support\Facades\DB;
         public function deleteGround($id)
         {
             $ground = DetailTanah::find($id);
+            $user = auth('api')->user()->id;
 
             if (!$ground) {
                 return ['success' => false, 'message' => 'Data tidak ditemukan'];
@@ -239,7 +245,11 @@ use Illuminate\Support\Facades\DB;
             }
 
             // Hapus data dari database
+            $ground->update([
+                'deleted_by' => $user
+            ]);
             $ground->delete();
+
 
             return ['success' => true, 'message' => 'Data ground berhasil dihapus'];
         }

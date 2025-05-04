@@ -22,7 +22,8 @@ class detailTanah extends Model
         'tipe_tanah_id',
         'alamat_id',
         'added_by',
-        'updated_by'
+        'updated_by',
+        'deleted_by'
     ];
 
     public $incrementing = false;
