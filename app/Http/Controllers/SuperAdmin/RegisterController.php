@@ -7,6 +7,7 @@ use App\Http\Requests\StoreUserRequest;
 use App\Models\User;
 use App\Services\UserService;
 use Database\Seeders\UserSeeder;
+use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 
@@ -21,7 +22,8 @@ class RegisterController extends Controller
 
     public function __invoke(StoreUserRequest $request)
     {
-        $registerUserData = $request->validated();
+        try {
+            $registerUserData = $request->validated();
 
         $user = $this->userService->storeUserData($registerUserData);
 
@@ -30,6 +32,12 @@ class RegisterController extends Controller
         return response()->json([
             'message' => 'User Created ',
             'status' => 'Success'
-        ], 200);
+        ], 201);
+        } catch (Exception $e) {
+            return response()->json([
+                'message' => 'Terjadi error saat membuat saat membuat akun',
+                'error' => $e->getMessage()
+            ], 500);
+        }
     }
 }

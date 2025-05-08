@@ -6,8 +6,12 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreUserRequest;
 use App\Models\User;
 use App\Services\UserService;
+use Exception;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Validation\ValidationException;
 
 class RegisterController extends Controller
 {
@@ -20,14 +24,21 @@ class RegisterController extends Controller
 
     public function __invoke(StoreUserRequest $request)
     {
-        $registerUserData = $request->validated();
+        try {
+            $registerUserData = $request->validated();
 
-        $user = $this->userService->storeUserData($registerUserData);
-        $user->assignRole('admin');
+            $user = $this->userService->storeUserData($registerUserData);
+            $user->assignRole('admin');
 
-        return response()->json([
-            'message' => 'User Created ',
-            'status' => 'success'
-        ], 200);
+            return response()->json([
+                'message' => 'User Created ',
+                'status' => 'success'
+            ], 201);
+        } catch (Exception $e) {
+            return response()->json([
+                'message' => 'Terjadi error saat membuat saat membuat akun',
+                'error' => $e->getMessage()
+            ], 500);
+        }
     }
 }

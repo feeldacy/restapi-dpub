@@ -1,10 +1,14 @@
 <?php
 
 use Fruitcake\Cors\CorsService;
+use Illuminate\Database\QueryException;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
 use Illuminate\Http\Middleware\HandleCors;
+use Illuminate\Support\Facades\Request;
+use Mockery\Exception\InvalidOrderException;
+use function PHPUnit\Framework\isInstanceOf;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
@@ -27,5 +31,20 @@ return Application::configure(basePath: dirname(__DIR__))
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
-        //
+        $exceptions->render(function (InvalidOrderException $e, Request $request){
+            if ($request->is('api/*')){
+                if ($e instanceof QueryException){
+                    if (str_contains($e->getMessage(), 'users_email_unique')){
+                        return response()->json([
+                            'message' => _('validation.email_registered'),
+                        ], 400);
+                    }
+
+                    return response()->json([
+                        'message' => 'Terjadi kesalahan pada database.',
+                        'error' => $e->getMessage()
+                    ], 500);
+                }
+            }
+        });
     })->create();

@@ -113,7 +113,10 @@ class GroundController extends Controller
         try {
             $result = $this->groundService->storeGroundData($request->validated());
 
-            return response()->json(['success' => true, 'message' => $result['message']]);
+            return response()->json([
+                'success' => true,
+                'message' => $result['message']
+            ], 201);
         } catch (\Exception $e) {
             return response()->json([
                 'error' => 'Terjadi kesalahan saat menyimpan data.',
@@ -191,7 +194,7 @@ class GroundController extends Controller
             Log::info('Request yang diterima:', $request->all());
             $result = $this->groundService->updateGroundData($id, $request->all());
 
-            return response()->json(['success' => true, 'message' => $result['message']]);
+            return response()->json(['success' => true, 'message' => $result['message']], 200);
         } catch (\Exception $e) {
             return response()->json([
                 'error' => 'Terjadi kesalahan saat menyimpan data.',

@@ -30,7 +30,7 @@ use Illuminate\Support\Facades\DB;
                 $markerTanahID = IdGenerator::generate(['table' => 'marker_tanah', 'length' => 8, 'prefix' => 'MT-']);
                 $polygonTanahID = IdGenerator::generate(['table' => 'polygon_tanah', 'length' => 8, 'prefix' => 'PT-']);
                 $user = auth('api')->user()->id;
-
+ 
                 // Menyimpan alamat tanah
                 $alamatTanah = AlamatTanah::create([
                     'id' => $alamatTanahID,
@@ -74,7 +74,6 @@ use Illuminate\Support\Facades\DB;
                     'coordinates' => $data['coordinates'],
                     'marker_id' => $markerTanah->id,
                 ]);
-
 
 
                 // Menyimpan file foto jika ada
