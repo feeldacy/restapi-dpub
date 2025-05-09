@@ -36,7 +36,7 @@ class RegisterController extends Controller
             ], 201);
         } catch (Exception $e) {
             return response()->json([
-                'message' => 'Terjadi error saat membuat saat membuat akun',
+                'message' => 'Terjadi error saat akun',
                 'error' => $e->getMessage()
             ], 500);
         }

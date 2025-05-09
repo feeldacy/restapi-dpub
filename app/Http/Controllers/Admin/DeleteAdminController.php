@@ -12,8 +12,21 @@ class DeleteAdminController extends Controller
     /**
      * Handle the incoming request.
      */
-    public function __invoke(Request $request)
+    public function __invoke(string $id)
     {
-        //
+        try {
+            $admin = User::findOrFail($id);
+
+            $admin->delete();
+
+            return response()->json([
+                'message' => 'Admin berhasil dihapus.',
+            ], 200);
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => 'Gagal menghapus admin.',
+                'error' => $e->getMessage(),
+            ], 500);
+        }
     }
 }

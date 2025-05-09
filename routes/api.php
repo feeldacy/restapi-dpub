@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Admin\DeleteAdminController;
 use App\Http\Controllers\Admin\RegisterController as AdminRegisterController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\LogoutController;
@@ -25,14 +26,19 @@ Route::get('/user', function (Request $request) {
 })->middleware('auth:sanctum');
 
 Route::post('/register/guest', RegisterController::class);
-Route::post('/register/admin', AdminRegisterController::class);
 Route::post('/register/superAdmin', SuperAdminRegisterController::class);
 
 Route::post('/login', LoginController::class);
 Route::post('/logout', LogoutController::class)->middleware('auth:sanctum');
 Route::get('/get/ground', [GroundController::class, 'fetchAllData'])->middleware('auth:sanctum');
 Route::get('/get/ground/{id}', [GroundController::class, 'show'])->middleware('auth:sanctum');
-Route::get('/get/admin', [UserController::class, 'index'])->middleware('auth:sanctum', 'role:superAdmin');
+
+
+Route::middleware(['auth:sanctum', 'role:superAdmin'])->group(function(){
+    Route::get('/get/admin', [UserController::class, 'index']);
+    Route::delete('/delete/admin/{id}', DeleteAdminController::class);
+    Route::post('/register/admin', AdminRegisterController::class);
+});
 
 
 Route::middleware(['auth:sanctum', 'role:admin|superAdmin'])->group(function () {
@@ -46,6 +52,8 @@ Route::middleware(['auth:sanctum', 'role:admin|superAdmin'])->group(function () 
     Route::get('/get/status-tanah', [StatusTanahController::class, 'getAllStatusTanah']);
     Route::get('/get/status-kepemilikan', [StatusKepemilikanController::class, 'getAllStatusKepemilikan']);
 });
+
+
 
 
 
