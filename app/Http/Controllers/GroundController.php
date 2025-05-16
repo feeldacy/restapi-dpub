@@ -21,75 +21,44 @@ class GroundController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function fetchAllData()
+    public function getAllData()
     {
 
-        // Fetch data using leftJoins
-        $groundData = DB::table('detail_tanah')
-            ->leftJoin('marker_tanah', 'detail_tanah.id', '=', 'marker_tanah.detail_tanah_id')
-            ->leftJoin('polygon_tanah', 'marker_tanah.id', '=', 'polygon_tanah.marker_id')
-            ->leftJoin('status_tanah', 'detail_tanah.status_tanah_id', '=', 'status_tanah.id')
-            ->leftJoin('status_kepemilikan', 'detail_tanah.status_kepemilikan_id', '=', 'status_kepemilikan.id')
-            ->leftJoin('tipe_tanah', 'detail_tanah.tipe_tanah_id', '=', 'tipe_tanah.id')
-            ->leftJoin('foto_tanah', 'detail_tanah.id', '=', 'foto_tanah.detail_tanah_id')
-            ->leftJoin('sertifikat_tanah', 'detail_tanah.id', '=', 'sertifikat_tanah.detail_tanah_id')
-            ->leftJoin('alamat_tanah', 'alamat_tanah.id', '=', 'detail_tanah.alamat_id')
-            ->whereNull('detail_tanah.deleted_at')
-            ->select(
-                'detail_tanah.id as detail_tanah_id',
-                'alamat_tanah.detail_alamat as alamat',
-                'foto_tanah.nama_foto_tanah as foto_tanah',
-                'sertifikat_tanah.nama_sertifikat_tanah as sertifikat_tanah',
-                'detail_tanah.nama_tanah',
-                'detail_tanah.luas_tanah',
-                'detail_tanah.updated_at',
-                'detail_tanah.added_by',
-                'detail_tanah.updated_by',
-                'status_kepemilikan.nama_status_kepemilikan',
-                'tipe_tanah.nama_tipe_tanah',
-                'status_tanah.nama_status_tanah',
-                "marker_tanah.latitude",
-                "marker_tanah.longitude"
-            )
-            ->get();
+       $groundData = DB::table('detail_tanah')
+        ->leftJoin('marker_tanah', 'detail_tanah.id', '=', 'marker_tanah.detail_tanah_id')
+        ->leftJoin('polygon_tanah', 'marker_tanah.id', '=', 'polygon_tanah.marker_id')
+        ->leftJoin('status_tanah', 'detail_tanah.status_tanah_id', '=', 'status_tanah.id')
+        ->leftJoin('status_kepemilikan', 'detail_tanah.status_kepemilikan_id', '=', 'status_kepemilikan.id')
+        ->leftJoin('tipe_tanah', 'detail_tanah.tipe_tanah_id', '=', 'tipe_tanah.id')
+        ->leftJoin('foto_tanah', 'detail_tanah.id', '=', 'foto_tanah.detail_tanah_id')
+        ->leftJoin('sertifikat_tanah', 'detail_tanah.id', '=', 'sertifikat_tanah.detail_tanah_id')
+        ->leftJoin('users as added_user', 'detail_tanah.added_by', '=', 'added_user.id')
+        ->leftJoin('users as updated_user', 'detail_tanah.updated_by', '=', 'updated_user.id')
+        ->leftJoin('users as deleted_user', 'detail_tanah.deleted_by', '=', 'deleted_user.id')
+        ->leftJoin('alamat_tanah', 'alamat_tanah.id', '=', 'detail_tanah.alamat_id')
+        ->whereNull('detail_tanah.deleted_at')
+        ->select(
+            'detail_tanah.id as detail_tanah_id',
+            'alamat_tanah.detail_alamat as alamat',
+            'foto_tanah.nama_foto_tanah as foto_tanah',
+            'sertifikat_tanah.nama_sertifikat_tanah as sertifikat_tanah',
+            'detail_tanah.nama_tanah',
+            'detail_tanah.luas_tanah',
+            'alamat_tanah.rt',
+            'alamat_tanah.rw',
+            'detail_tanah.updated_at',
+            'status_kepemilikan.nama_status_kepemilikan',
+            'tipe_tanah.nama_tipe_tanah',
+            'status_tanah.nama_status_tanah',
+            "marker_tanah.latitude",
+            "marker_tanah.longitude",
+            'polygon_tanah.coordinates',
+            'added_user.name as added_by_name',
+            'updated_user.name as updated_by_name',
+            'deleted_user.name as deleted_by_name'
+        )
+        ->get();
 
-        return response()->json([
-            'status' => 'success',
-            'data' => $groundData
-        ], 200);
-    }
-
-    public function fetchDeletedData()
-    {
-        // Fetch data using leftJoins
-        $groundData = DB::table('detail_tanah')
-            ->leftJoin('marker_tanah', 'detail_tanah.id', '=', 'marker_tanah.detail_tanah_id')
-            ->leftJoin('polygon_tanah', 'marker_tanah.id', '=', 'polygon_tanah.marker_id')
-            ->leftJoin('status_tanah', 'detail_tanah.status_tanah_id', '=', 'status_tanah.id')
-            ->leftJoin('status_kepemilikan', 'detail_tanah.status_kepemilikan_id', '=', 'status_kepemilikan.id')
-            ->leftJoin('tipe_tanah', 'detail_tanah.tipe_tanah_id', '=', 'tipe_tanah.id')
-            ->leftJoin('foto_tanah', 'detail_tanah.id', '=', 'foto_tanah.detail_tanah_id')
-            ->leftJoin('sertifikat_tanah', 'detail_tanah.id', '=', 'sertifikat_tanah.detail_tanah_id')
-            ->leftJoin('alamat_tanah', 'alamat_tanah.id', '=', 'detail_tanah.alamat_id')
-            ->whereNotNull('detail_tanah.deleted_at')
-            ->select(
-                'detail_tanah.id as detail_tanah_id',
-                'alamat_tanah.detail_alamat as alamat',
-                'foto_tanah.nama_foto_tanah as foto_tanah',
-                'sertifikat_tanah.nama_sertifikat_tanah as sertifikat_tanah',
-                'detail_tanah.nama_tanah',
-                'detail_tanah.luas_tanah',
-                'detail_tanah.updated_at',
-                'detail_tanah.added_by',
-                'detail_tanah.updated_by',
-                'detail_tanah.deleted_at',
-                'status_kepemilikan.nama_status_kepemilikan',
-                'tipe_tanah.nama_tipe_tanah',
-                'status_tanah.nama_status_tanah',
-                "marker_tanah.latitude",
-                "marker_tanah.longitude"
-            )
-            ->get();
 
         return response()->json([
             'status' => 'success',
@@ -129,7 +98,7 @@ class GroundController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
+    public function getSpecificData(string $id)
     {
         $groundData = detailTanah::query()
             ->leftJoin('marker_tanah', 'detail_tanah.id', '=', 'marker_tanah.detail_tanah_id')
@@ -145,6 +114,8 @@ class GroundController extends Controller
             ->select(
                 'detail_tanah.id as detail_tanah_id',
                 'alamat_tanah.detail_alamat as alamat',
+                'alamat_tanah.rt',
+                'alamat_tanah.rw',
                 'foto_tanah.nama_foto_tanah as foto_tanah',
                 'sertifikat_tanah.nama_sertifikat_tanah as sertifikat_tanah',
                 'detail_tanah.nama_tanah',
@@ -153,11 +124,15 @@ class GroundController extends Controller
                 'detail_tanah.added_by',
                 'detail_tanah.updated_by',
                 'detail_tanah.deleted_at',
+                'detail_tanah.tipe_tanah_id',
+                'detail_tanah.status_tanah_id',
+                'detail_tanah.status_kepemilikan_id',
                 'status_kepemilikan.nama_status_kepemilikan',
                 'tipe_tanah.nama_tipe_tanah',
                 'status_tanah.nama_status_tanah',
                 'marker_tanah.latitude',
-                'marker_tanah.longitude'
+                'marker_tanah.longitude',
+                'polygon_tanah.coordinates',
             )
             ->first(); // hanya satu data
 

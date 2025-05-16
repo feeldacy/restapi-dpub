@@ -23,6 +23,25 @@ class markerTanah extends Model
     public $incrementing = false;
     protected $keyType = 'string';
 
+
+    protected static function booted()
+    {
+        static::deleting(function ($markerTanah) {
+            if (!$markerTanah->isForceDeleting()) {
+
+                if ($markerTanah->polygonTanah) {
+                    $markerTanah->polygonTanah->delete();
+                }
+            }
+        });
+
+        static::restoring(function ($markerTanah){
+            if ($markerTanah->polygonTanah()->withTrashed()->exists()) {
+                $markerTanah->polygonTanah()->withTrashed()->first()->restore();
+            }
+        });
+    }
+
     public function groundDetail(){
         return $this->belongsTo(DetailTanah::class, 'detail_tanah_id');
     }

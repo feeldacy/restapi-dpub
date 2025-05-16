@@ -5,6 +5,7 @@ use App\Http\Controllers\Admin\RegisterController as AdminRegisterController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\LogoutController;
 use App\Http\Controllers\Auth\RegisterController;
+use App\Http\Controllers\DeletedGroundController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\GroundController;
 use App\Http\Controllers\StatusKepemilikanController;
@@ -30,8 +31,8 @@ Route::post('/register/superAdmin', SuperAdminRegisterController::class);
 
 Route::post('/login', LoginController::class);
 Route::post('/logout', LogoutController::class)->middleware('auth:sanctum');
-Route::get('/get/ground', [GroundController::class, 'fetchAllData'])->middleware('auth:sanctum');
-Route::get('/get/ground/{id}', [GroundController::class, 'show'])->middleware('auth:sanctum');
+Route::get('/get/ground', [GroundController::class, 'getAllData'])->middleware('auth:sanctum');
+Route::get('/get/ground/{id}', [GroundController::class, 'getSpecificData'])->middleware('auth:sanctum');
 
 
 Route::middleware(['auth:sanctum', 'role:superAdmin'])->group(function(){
@@ -45,7 +46,9 @@ Route::middleware(['auth:sanctum', 'role:admin|superAdmin'])->group(function () 
     Route::post('/create/ground', [GroundController::class, 'store']);
     Route::patch('/update/ground/{id}', [GroundController::class, 'update']);
     Route::delete('/delete/ground/{id}', [GroundController::class, 'destroy']);
-    Route::get('/get/deleted-ground', [GroundController::class, 'fetchDeletedData']);
+    Route::post('/restore/deleted-ground/{id}', [DeletedGroundController::class, 'restore']);
+    Route::get('/get/deleted-ground', [DeletedGroundController::class, 'getAllDeletedData']);
+    Route::get('/get/deleted-ground/{id}', [DeletedGroundController::class, 'getSpecificDeletedData']);
     Route::post('/create/tipe-tanah', [TipeTanahController::class, 'store']);
     Route::patch('/update/tipe-tanah/{id}', [TipeTanahController::class, 'updateTipeTanah']);
     Route::get('/get/tipe-tanah', [TipeTanahController::class, 'getAllTipeTanah']);

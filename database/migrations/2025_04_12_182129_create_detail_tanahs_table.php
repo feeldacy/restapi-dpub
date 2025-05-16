@@ -19,12 +19,19 @@ return new class extends Migration
             $table->string('status_kepemilikan_id');
             $table->string('status_tanah_id');
             $table->string('tipe_tanah_id');
+            $table->unsignedBigInteger('added_by')->nullable();
+            $table->unsignedBigInteger('updated_by')->nullable();
+            $table->unsignedBigInteger('deleted_by')->nullable();
 
             // Reference to related tables
             $table->foreign('status_kepemilikan_id')->references('id')->on('status_kepemilikan');
             $table->foreign('status_tanah_id')->references('id')->on('status_tanah');
             $table->foreign('tipe_tanah_id')->references('id')->on('tipe_tanah');
             $table->foreign('alamat_id')->references('id')->on('alamat_tanah');
+            $table->foreign('added_by')->references('id')->on('users')->onDelete('set null');
+            $table->foreign('updated_by')->references('id')->on('users')->onDelete('set null');
+            $table->foreign('deleted_by')->references('id')->on('users')->onDelete('set null');
+
 
             $table->timestamps();
             $table->softDeletes();
