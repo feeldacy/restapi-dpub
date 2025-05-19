@@ -56,6 +56,14 @@ Route::middleware(['auth:sanctum', 'role:admin|superAdmin'])->group(function () 
     Route::get('/get/status-kepemilikan', [StatusKepemilikanController::class, 'getAllStatusKepemilikan']);
 });
 
+Route::get('/test', function () {
+    return response()->json([
+        'success' => true,
+        'message' => 'API is working!',
+        'timestamp' => now(),
+    ]);
+});
+
 
 
 
