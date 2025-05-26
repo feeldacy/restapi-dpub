@@ -19,11 +19,14 @@ class LoginController extends Controller
             'email'=>'required|string|email',
             'password'=>'required'
         ]);
+
         $user = User::where('email',$loginUserData['email'])->first();
         if(!$user || !Hash::check($loginUserData['password'],$user->password)){
             return response()->noContent(401);
         }
+        
         $token = $user->createToken($user->name.'-AuthToken')->plainTextToken;
+
         return response()->json([
             'access_token' => $token,
         ]);

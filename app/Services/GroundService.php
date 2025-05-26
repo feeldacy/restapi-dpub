@@ -12,8 +12,10 @@ use App\Models\User;
 use Illuminate\Support\Facades\DB;
     use Illuminate\Support\Facades\Auth;
     use Haruncpi\LaravelIdGenerator\IdGenerator;
-    use Illuminate\Support\Facades\Log;
-    use Illuminate\Support\Facades\Storage;
+use Illuminate\Http\Request;
+use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
 
     class GroundService
     {
@@ -30,7 +32,7 @@ use Illuminate\Support\Facades\DB;
                 $markerTanahID = IdGenerator::generate(['table' => 'marker_tanah', 'length' => 8, 'prefix' => 'MT-']);
                 $polygonTanahID = IdGenerator::generate(['table' => 'polygon_tanah', 'length' => 8, 'prefix' => 'PT-']);
                 $user = auth('api')->user()->id;
- 
+
                 // Menyimpan alamat tanah
                 $alamatTanah = AlamatTanah::create([
                     'id' => $alamatTanahID,
@@ -114,98 +116,91 @@ use Illuminate\Support\Facades\DB;
 
         public function updateGroundData($id, array $data)
         {
-
             return DB::transaction(function () use ($id, $data) {
-                Log::info('Data yang diterima:', $data);
                 Log::info('Mulai memperbarui data tanah', ['id' => $id]);
 
-                // Mengambil data user
                 $user = auth('api')->user()->id;
 
-                // Cari Detail Tanah berdasarkan ID
                 $detailTanah = DetailTanah::findOrFail($id);
 
                 // Update Alamat Tanah
                 $detailTanah->alamatTanah()->update([
-                    'detail_alamat' => $data['detail_alamat'],
-                    'rt' => $data['rt'],
-                    'rw' => $data['rw'],
-                    'padukuhan' => $data['padukuhan'],
+                    'detail_alamat' => $data['detail_alamat'] ?? null,
+                    'rt' => $data['rt'] ?? null,
+                    'rw' => $data['rw'] ?? null,
+                    'padukuhan' => $data['padukuhan'] ?? null,
                 ]);
 
                 // Update Detail Tanah
                 $detailTanah->update([
-                    'nama_tanah' => $data['nama_tanah'],
-                    'luas_tanah' => $data['luas_tanah'],
-                    'status_kepemilikan_id' => $data['status_kepemilikan_id'],
-                    'status_tanah_id' => $data['status_tanah_id'],
-                    'tipe_tanah_id' => $data['tipe_tanah_id'],
-                    'updated_by' => $user
+                    'nama_tanah' => $data['nama_tanah'] ?? $detailTanah->nama_tanah,
+                    'luas_tanah' => $data['luas_tanah'] ?? $detailTanah->luas_tanah,
+                    'status_kepemilikan_id' => $data['status_kepemilikan_id'] ?? $detailTanah->status_kepemilikan_id,
+                    'status_tanah_id' => $data['status_tanah_id'] ?? $detailTanah->status_tanah_id,
+                    'tipe_tanah_id' => $data['tipe_tanah_id'] ?? $detailTanah->tipe_tanah_id,
+                    'updated_by' => $user,
                 ]);
 
                 // Update Marker Tanah
                 $detailTanah->markerTanah()->update([
-                    'latitude' => $data['latitude'],
-                    'longitude' => $data['longitude'],
+                    'latitude' => $data['latitude'] ?? $detailTanah->markerTanah->latitude,
+                    'longitude' => $data['longitude'] ?? $detailTanah->markerTanah->longitude,
                 ]);
 
                 // Update Polygon Tanah
+                $coordinates = isset($data['coordinates']) ? json_decode($data['coordinates'], true) : null;
                 $detailTanah->markerTanah->polygonTanah()->update([
-                    'coordinates' => $data['coordinates'],
+                    'coordinates' => $coordinates['geometry']['coordinates'] ?? $detailTanah->markerTanah->polygonTanah->coordinates,
                 ]);
 
-                // Update Foto Tanah jika ada
-                if (isset($data['foto_tanah'])) {
+                if (isset($data['foto_tanah']) && $data['foto_tanah'] instanceof UploadedFile) {
+                    $foto = $data['foto_tanah'];
+
                     $fotoTanah = FotoTanah::where('detail_tanah_id', $detailTanah->id)->first();
 
-                    // Hapus file foto lama jika ada
                     if ($fotoTanah && Storage::disk('public')->exists('ground_image/' . $fotoTanah->nama_foto_tanah)) {
                         Storage::disk('public')->delete('ground_image/' . $fotoTanah->nama_foto_tanah);
                         Log::info("Foto lama dihapus", ['name' => $fotoTanah->nama_foto_tanah]);
                     }
 
-                    // Membuat file foto baru
                     $photoGroundID = IdGenerator::generate(['table' => 'foto_tanah', 'length' => 8, 'prefix' => 'FT-']);
-                    $photoName = 'ground_image_' . time() . '.' . $data['foto_tanah']->getClientOriginalExtension();
-                    $data['foto_tanah']->storeAs('ground_image', $photoName, 'public');
+                    $photoName = 'ground_image_' . time() . '.' . $foto->getClientOriginalExtension();
 
+                    $foto->storeAs('ground_image', $photoName, 'public');
                     Log::info("Foto berhasil diperbarui", ['name' => $photoName]);
 
-                    // Menyimpan file foto baru
                     FotoTanah::updateOrCreate(
                         ['detail_tanah_id' => $detailTanah->id],
                         [
                             'id' => $photoGroundID,
-                            'ukuran_foto_tanah' => $data['foto_tanah']->getSize(),
+                            'ukuran_foto_tanah' => $foto->getSize(),
                             'nama_foto_tanah' => $photoName,
                         ]
                     );
                 }
 
-                // Update Sertifikat Tanah jika ada
-                if (isset($data['sertifikat_tanah'])) {
+                if (isset($data['sertifikat_tanah']) && $data['sertifikat_tanah'] instanceof UploadedFile) {
+                    $sertifikat = $data['sertifikat_tanah'];
+
                     $sertifikatTanah = SertifikatTanah::where('detail_tanah_id', $detailTanah->id)->first();
 
-                    // Hapus file sertifikat lama jika ada
                     if ($sertifikatTanah && Storage::disk('public')->exists('ground_sertificate/' . $sertifikatTanah->nama_sertifikat_tanah)) {
                         Storage::disk('public')->delete('ground_sertificate/' . $sertifikatTanah->nama_sertifikat_tanah);
                         Log::info("Sertifikat lama dihapus", ['name' => $sertifikatTanah->nama_sertifikat_tanah]);
                     }
 
-                    // Membuat file sertifikat baru
-                    $sertificateGroundID = IdGenerator::generate(['table' => 'sertifikat_tanah', 'length' => 8, 'prefix' => 'ST-']);
-                    $sertifName = 'ground_sertifikat_' . time() . '.' . $data['sertifikat_tanah']->getClientOriginalExtension();
-                    $data['sertifikat_tanah']->storeAs('ground_sertificate', $sertifName, 'public');
+                    $sertifikatTanahID = IdGenerator::generate(['table' => 'sertifikat_tanah', 'length' => 8, 'prefix' => 'ST-']);
+                    $sertifikatTanahName = 'ground_sertificate_' . time() . '.' . $sertifikat->getClientOriginalExtension();
 
-                    Log::info("Sertifikat berhasil diperbarui", ['name' => $sertifName]);
+                    $sertifikat->storeAs('ground_sertificate', $sertifikatTanahName, 'public');
+                    Log::info("Sertifikat berhasil diperbarui", ['name' => $sertifikatTanahName]);
 
-                    // Menyimpan file sertifikat baru
                     SertifikatTanah::updateOrCreate(
                         ['detail_tanah_id' => $detailTanah->id],
                         [
-                            'id' => $sertificateGroundID,
-                            'ukuran_sertifikat_tanah' => $data['sertifikat_tanah']->getSize(),
-                            'nama_sertifikat_tanah' => $sertifName,
+                            'id' => $sertifikatTanahID,
+                            'ukuran_sertifikat_tanah' => $sertifikat->getSize(),
+                            'nama_sertifikat_tanah' => $sertifikatTanahName,
                         ]
                     );
                 }

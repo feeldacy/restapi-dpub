@@ -7,6 +7,7 @@ use App\Http\Requests\StoreUserRequest;
 use App\Models\User;
 use App\Services\UserService;
 use Exception;
+use Illuminate\Auth\Events\Registered;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;

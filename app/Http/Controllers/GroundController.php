@@ -5,9 +5,11 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StoreGroundRequest;
 use App\Models\detailTanah;
 use App\Services\GroundService;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Validation\ValidationException;
 
 class GroundController extends Controller
 {
@@ -44,6 +46,7 @@ class GroundController extends Controller
             'sertifikat_tanah.nama_sertifikat_tanah as sertifikat_tanah',
             'detail_tanah.nama_tanah',
             'detail_tanah.luas_tanah',
+            'alamat_tanah.padukuhan',
             'alamat_tanah.rt',
             'alamat_tanah.rw',
             'detail_tanah.updated_at',
@@ -116,6 +119,7 @@ class GroundController extends Controller
                 'alamat_tanah.detail_alamat as alamat',
                 'alamat_tanah.rt',
                 'alamat_tanah.rw',
+                'alamat_tanah.padukuhan',
                 'foto_tanah.nama_foto_tanah as foto_tanah',
                 'sertifikat_tanah.nama_sertifikat_tanah as sertifikat_tanah',
                 'detail_tanah.nama_tanah',
@@ -161,15 +165,23 @@ class GroundController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(StoreGroundRequest $request, string $id): JsonResponse
     {
+
         try {
-            Log::info('Raw Request:', ['input' => file_get_contents('php://input')]);
+            Log::info('Request data:', $request->all());
+            $validated = $request->validated();
+            $result = $this->groundService->updateGroundData($id, $validated);
 
-            Log::info('Request yang diterima:', $request->all());
-            $result = $this->groundService->updateGroundData($id, $request->all());
-
-            return response()->json(['success' => true, 'message' => $result['message']], 200);
+            return response()->json([
+                'success' => true,
+                'message' => $result['message']
+            ], 200);
+        } catch (ValidationException $e) {
+            return response()->json([
+                'message' => 'Validation failed',
+                'errors' => $e->errors()
+            ], 422);
         } catch (\Exception $e) {
             return response()->json([
                 'error' => 'Terjadi kesalahan saat menyimpan data.',
