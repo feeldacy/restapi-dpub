@@ -168,11 +168,24 @@ class GroundController extends Controller
     public function update(StoreGroundRequest $request, string $id): JsonResponse
     {
 
+
         try {
             Log::info('Request data:', $request->all());
             $validated = $request->validated();
             $result = $this->groundService->updateGroundData($id, $validated);
+            Log::info('Request data:', $request->all());
+            $validated = $request->validated();
+            $result = $this->groundService->updateGroundData($id, $validated);
 
+            return response()->json([
+                'success' => true,
+                'message' => $result['message']
+            ], 200);
+        } catch (ValidationException $e) {
+            return response()->json([
+                'message' => 'Validation failed',
+                'errors' => $e->errors()
+            ], 422);
             return response()->json([
                 'success' => true,
                 'message' => $result['message']
