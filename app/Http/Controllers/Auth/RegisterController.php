@@ -7,6 +7,7 @@ use App\Http\Requests\StoreUserRequest;
 use App\Models\User;
 use App\Services\UserService;
 use Exception;
+use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 
@@ -26,14 +27,18 @@ class RegisterController extends Controller
         try {
             $registerUserData = $request->validated();
 
-        $user = $this->userService->storeUserData($registerUserData);
+            $user = $this->userService->storeUserData($registerUserData);
 
-        $user->assignRole('guest');
+            $user->assignRole('guest');
 
-        return response()->json([
-            'message' => 'User Guest Created ',
-            'status' => 'Success'
-        ], 201);
+            event(new Registered($user));
+
+            // $user->sendEmailVerificationNotification();
+
+            return response()->json([
+                'message' => 'User Guest Created ',
+                'status' => 'Success'
+            ], 201);
         } catch (Exception $e) {
             return response()->json([
                 'message' => 'Terjadi error saat membuat akun',

@@ -5,10 +5,11 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StoreGroundRequest;
 use App\Models\detailTanah;
 use App\Services\GroundService;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Http\JsonResponse;
+use Illuminate\Validation\ValidationException;
 
 class GroundController extends Controller
 {
@@ -45,6 +46,7 @@ class GroundController extends Controller
             'sertifikat_tanah.nama_sertifikat_tanah as sertifikat_tanah',
             'detail_tanah.nama_tanah',
             'detail_tanah.luas_tanah',
+            'alamat_tanah.padukuhan',
             'alamat_tanah.rt',
             'alamat_tanah.rw',
             'detail_tanah.updated_at',

@@ -7,10 +7,13 @@ use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\LogoutController;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\DeletedGroundController;
+use App\Http\Controllers\ForgotPasswordController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\GroundController;
+use App\Http\Controllers\ResetPasswordController;
 use App\Http\Controllers\StatusKepemilikanController;
 use App\Http\Controllers\StatusTanahController;
+use App\Http\Controllers\SubmitForgotPasswordController;
 use App\Http\Controllers\SuperAdmin\RegisterController as SuperAdminRegisterController;
 use App\Http\Controllers\TipeTanahController;
 use App\Http\Controllers\Auth\SubmitForgotPasswordController;
@@ -18,6 +21,8 @@ use App\Http\Controllers\Auth\ResetPasswordController;
 use App\Http\Controllers\Auth\VerifyForgotPasswordController;
 use App\Http\Controllers\VisitorController;
 use App\Http\Controllers\FilePreviewController;
+use App\Http\Controllers\VerifyForgotPasswordController;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -54,6 +59,10 @@ Route::middleware(['auth:sanctum', 'role:superAdmin'])->group(function(){
     Route::patch('/update/admin/{id}', EditAdminController::class);
 });
 
+Route::post('forgot-password-by-otp', SubmitForgotPasswordController::class);
+Route::post('verify-forgot-password-otp', VerifyForgotPasswordController::class);
+Route::post('reset-password-by-otp', ResetPasswordController::class);
+
 
 Route::middleware(['auth:sanctum', 'role:admin|superAdmin'])->group(function () {
     Route::post('/create/ground', [GroundController::class, 'store']);
@@ -68,6 +77,76 @@ Route::middleware(['auth:sanctum', 'role:admin|superAdmin'])->group(function () 
     Route::get('/get/status-tanah', [StatusTanahController::class, 'getAllStatusTanah']);
     Route::get('/get/status-kepemilikan', [StatusKepemilikanController::class, 'getAllStatusKepemilikan']);
 });
+
+
+Route::get('/auth/verify-email/{id}/{hash}', function ($id, $hash, Request $request) {
+        // Find user by ID
+    $user = User::find($id);
+
+    if (!$user) {
+        return response()->json(['message' => 'User not found.'], 404);
+    }
+
+    // Verify if the hash is correct
+    if (!hash_equals((string) $hash, sha1($user->getEmailForVerification()))) {
+        return response()->json(['message' => 'Invalid verification link.'], 403);
+    }
+
+    // Mark email as verified
+    if (!$user->hasVerifiedEmail()) {
+        $user->markEmailAsVerified();
+    }
+
+    return redirect(env('FRONTEND_URL') . '/email-verified');
+    // return response()->json(['message' => 'Email verified successfully!']);
+})->middleware('signed')->name('verification.verify');
+
+
+Route::get('/test', function () {
+    return response()->json([
+        'success' => true,
+        'message' => 'API is working!',
+        'timestamp' => now(),
+    ]);
+});
+
+
+
+
+
+Route::get('/auth/verify-email/{id}/{hash}', function ($id, $hash, Request $request) {
+        // Find user by ID
+    $user = User::find($id);
+
+    if (!$user) {
+        return response()->json(['message' => 'User not found.'], 404);
+    }
+
+    // Verify if the hash is correct
+    if (!hash_equals((string) $hash, sha1($user->getEmailForVerification()))) {
+        return response()->json(['message' => 'Invalid verification link.'], 403);
+    }
+
+    // Mark email as verified
+    if (!$user->hasVerifiedEmail()) {
+        $user->markEmailAsVerified();
+    }
+
+    return redirect(env('FRONTEND_URL') . '/email-verified');
+    // return response()->json(['message' => 'Email verified successfully!']);
+})->middleware('signed')->name('verification.verify');
+
+
+Route::get('/test', function () {
+    return response()->json([
+        'success' => true,
+        'message' => 'API is working!',
+        'timestamp' => now(),
+    ]);
+});
+
+
+
 
 Route::get('/file-preview/{fileName}', [FilePreviewController::class, 'filePreview']);
 
