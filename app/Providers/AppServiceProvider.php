@@ -3,6 +3,8 @@
 namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
+use Illuminate\Foundation\AliasLoader;
+use Vish4395\LaravelFileViewer\LaravelFileViewerFacade;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -11,7 +13,8 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        //
+        $loader = AliasLoader::getInstance();
+        $loader->alias('LaravelFileViewer', LaravelFileViewerFacade::class);
     }
 
     /**

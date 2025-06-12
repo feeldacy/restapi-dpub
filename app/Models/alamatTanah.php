@@ -23,6 +23,7 @@ class alamatTanah extends Model
 
     public $incrementing = false;
     protected $keyType = 'string';
+    
     public function groundDetails()
     {
         return $this->hasMany(DetailTanah::class, 'alamat_id');

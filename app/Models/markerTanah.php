@@ -43,10 +43,10 @@ class markerTanah extends Model
     }
 
     public function groundDetail(){
-        return $this->belongsTo(DetailTanah::class, 'detail_tanah_id');
+        return $this->belongsTo(detailTanah::class, 'detail_tanah_id');
     }
 
     public function polygonTanah(){
-        return $this->hasOne(PolygonTanah::class,'marker_id');
+        return $this->hasOne(polygonTanah::class,'marker_id');
     }
 }

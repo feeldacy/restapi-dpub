@@ -74,19 +74,19 @@ class detailTanah extends Model
     }
 
     public function statusKepemilikan(){
-        return $this->belongsTo(StatusKepemilikan::class, 'status_kepemilikan_id');
+        return $this->belongsTo(statusKepemilikan::class, 'status_kepemilikan_id');
     }
 
     public function statusTanah(){
-        return $this->belongsTo(StatusTanah::class,'status_tanah_id');
+        return $this->belongsTo(statusTanah::class,'status_tanah_id');
     }
 
     public function tipeTanah(){
-        return $this->belongsTo(TipeTanah::class, 'tipe_tanah_id');
+        return $this->belongsTo(tipeTanah::class, 'tipe_tanah_id');
     }
 
     public function alamatTanah(){
-        return $this->belongsTo(AlamatTanah::class, 'alamat_id');
+        return $this->belongsTo(alamatTanah::class, 'alamat_id');
     }
 
     public function addedBy(){
@@ -98,14 +98,14 @@ class detailTanah extends Model
     }
 
     public function fotoTanah(){
-        return $this->hasMany(FotoTanah::class, 'detail_tanah_id');
+        return $this->hasMany(fotoTanah::class, 'detail_tanah_id');
     }
 
     public function sertifikatTanah(){
-        return $this->hasMany(SertifikatTanah::class, 'detail_tanah_id');
+        return $this->hasMany(sertifikatTanah::class, 'detail_tanah_id');
     }
 
     public function markerTanah(){
-        return $this->hasOne(MarkerTanah::class, 'detail_tanah_id');
+        return $this->hasOne(markerTanah::class, 'detail_tanah_id');
     }
 }

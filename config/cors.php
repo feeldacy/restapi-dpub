@@ -15,18 +15,20 @@ return [
     |
     */
 
-    'paths' => ['*'],
+    'paths' => ['api/*', 'sanctum/csrf-cookie'],
 
     'allowed_methods' => ['*'],
 
-    'allowed_origins' => ['http://127.0.0.1:3000'],
-
+    'allowed_origins' => ['https://digitalmap-umbulharjo.madanateknologi.web.id'], 
+    
     'allowed_origins_patterns' => [],
 
-    'allowed_headers' => ['*'],
+    'allowed_headers' => ['Content-Type', 'Authorization', 'Accept', 'X-Requested-With'],
+    
+    'exposed_headers' => ['Content-Disposition'],
 
-    'exposed_headers' => [],
-
+    'max_age' => 0,
+    
     'supports_credentials' => true,
 
 ];

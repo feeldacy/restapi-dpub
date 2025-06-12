@@ -9,6 +9,8 @@ use Illuminate\Http\Middleware\HandleCors;
 use Illuminate\Support\Facades\Request;
 use Mockery\Exception\InvalidOrderException;
 use function PHPUnit\Framework\isInstanceOf;
+use Illuminate\Support\Facades\Facade;
+
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
