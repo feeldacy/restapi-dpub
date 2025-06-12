@@ -8,8 +8,8 @@
     use App\Models\markerTanah;
     use App\Models\polygonTanah;
     use App\Models\sertifikatTanah;
-use App\Models\User;
-use Illuminate\Support\Facades\DB;
+    use App\Models\User;
+    use Illuminate\Support\Facades\DB;
     use Illuminate\Support\Facades\Auth;
     use Haruncpi\LaravelIdGenerator\IdGenerator;
 use Illuminate\Http\Request;
@@ -25,7 +25,6 @@ use Illuminate\Support\Facades\Storage;
             return DB::transaction(function () use ($data) {
                 Log::info('Mulai menyimpan data', $data);
 
-                // Generate custom IDs untuk alamatTanah, detailTanah, markerTanah, dan polygonTanah
                 $alamatTanahID = IdGenerator::generate(['table' => 'alamat_tanah', 'length' => 8, 'prefix' => 'AT-']);
                 Log::info('ID AlamatTanah', ['id' => $alamatTanahID]);
                 $detailTanahID = IdGenerator::generate(['table' => 'detail_tanah', 'length' => 8, 'prefix' => 'DT-']);
@@ -42,7 +41,6 @@ use Illuminate\Support\Facades\Storage;
                     'padukuhan' => $data['padukuhan'],
                 ]);
 
-                // Menyimpan detail tanah
                 $detailTanah = DetailTanah::create([
                     'id' => $detailTanahID,
                     'nama_tanah' => $data['nama_tanah'],
@@ -54,7 +52,6 @@ use Illuminate\Support\Facades\Storage;
                     'added_by' => $user
                 ]);
 
-                // Menyimpan marker tanah
                 $markerTanah = MarkerTanah::create([
                     'id' => $markerTanahID,
                     'latitude' => $data['latitude'],
@@ -70,7 +67,6 @@ use Illuminate\Support\Facades\Storage;
                     'marker_id' => $markerTanah->id
                 ]);
 
-                // Menyimpan polygon tanah
                 $polygonTanah = PolygonTanah::create([
                     'id' => $polygonTanahID,
                     'coordinates' => $data['coordinates'],
@@ -78,7 +74,6 @@ use Illuminate\Support\Facades\Storage;
                 ]);
 
 
-                // Menyimpan file foto jika ada
                 if (isset($data['foto_tanah'])) {
                     $photoGroundID = IdGenerator::generate(['table' => 'foto_tanah', 'length' => 8, 'prefix' => 'FT-']);
                     $photoName = 'ground_image_' . time() . '.' . $data['foto_tanah']->getClientOriginalExtension();
@@ -94,7 +89,6 @@ use Illuminate\Support\Facades\Storage;
                     ]);
                 }
 
-                // Menyimpan file sertifikat jika ada
                 if (isset($data['sertifikat_tanah'])) {
                     $sertificateGroundID = IdGenerator::generate(['table' => 'sertifikat_tanah', 'length' => 8, 'prefix' => 'ST-']);
                     $sertifName = 'ground_sertifikat_' . time() . '.' . $data['sertifikat_tanah']->getClientOriginalExtension();

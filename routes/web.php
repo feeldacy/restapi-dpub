@@ -6,3 +6,6 @@ Route::get('/', function () {
     return ['Laravel' => app()->version()];
 });
 
+Route::get('/cek', function () {
+    return 'Laravel jalan';
+});

@@ -94,6 +94,7 @@ class TipeTanahController extends Controller
     {
         //
     }
+    
     public function getAllTipeTanah(): JsonResponse
     {
         $data = TipeTanah::all(); // Fetch all records
