@@ -16,9 +16,6 @@ use App\Http\Controllers\StatusTanahController;
 use App\Http\Controllers\SubmitForgotPasswordController;
 use App\Http\Controllers\SuperAdmin\RegisterController as SuperAdminRegisterController;
 use App\Http\Controllers\TipeTanahController;
-use App\Http\Controllers\Auth\SubmitForgotPasswordController;
-use App\Http\Controllers\Auth\ResetPasswordController;
-use App\Http\Controllers\Auth\VerifyForgotPasswordController;
 use App\Http\Controllers\VisitorController;
 use App\Http\Controllers\FilePreviewController;
 use App\Http\Controllers\VerifyForgotPasswordController;
@@ -51,6 +48,9 @@ Route::get('/get/ground/{id}', [GroundController::class, 'getSpecificData'])->mi
 
 Route::post('/visit', [VisitorController::class, 'recordVisit'])->middleware('auth:sanctum');
 Route::get('/get/visitors', [VisitorController::class, 'getCounts']);
+Route::get('/get/visitors/weekly', [VisitorController::class, 'getWeekly']);
+Route::get('/get/visitors/monthly', [VisitorController::class, 'getMonthly']);
+Route::get('/get/visitors/yearly', [VisitorController::class, 'getYearly']);
 
 Route::middleware(['auth:sanctum', 'role:superAdmin'])->group(function(){
     Route::get('/get/admin', [UserController::class, 'index']);
@@ -109,9 +109,6 @@ Route::get('/test', function () {
         'timestamp' => now(),
     ]);
 });
-
-
-
 
 
 Route::get('/auth/verify-email/{id}/{hash}', function ($id, $hash, Request $request) {

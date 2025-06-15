@@ -21,7 +21,6 @@ use Illuminate\Support\Facades\Storage;
     {
         public function storeGroundData(array $data)
         {
-
             return DB::transaction(function () use ($data) {
                 Log::info('Mulai menyimpan data', $data);
 

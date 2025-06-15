@@ -4,31 +4,57 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use App\Http\Requests\LoginUserRequest;
 
 class LoginController extends Controller
 {
     /**
-     * Handle the incoming request.
+     * Handle the incoming login request.
      */
-    public function __invoke(Request $request)
+    public function __invoke(LoginUserRequest $request)
     {
-        $loginUserData = $request->validate([
-            'email'=>'required|string|email',
-            'password'=>'required'
-        ]);
+        try {
+            $loginUserData = $request->validated();
 
-        $user = User::where('email',$loginUserData['email'])->first();
-        if(!$user || !Hash::check($loginUserData['password'],$user->password)){
-            return response()->noContent(401);
+            $user = User::where('email', $loginUserData['email'])->first();
+
+            if (!$user) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Email tidak ditemukan.'
+                ], 401);
+            }
+
+            if (!Hash::check($loginUserData['password'], $user->password)) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Password salah, mohon masukkan password yang sesuai.'
+                ], 401);
+            }
+
+            $token = $user->createToken($user->name . '-AuthToken')->plainTextToken;
+
+            return response()->json([
+                'status' => 'success',
+                'access_token' => $token
+            ], 200);
         }
-        
-        $token = $user->createToken($user->name.'-AuthToken')->plainTextToken;
 
-        return response()->json([
-            'access_token' => $token,                   
-        ]);
+        catch (\Illuminate\Validation\ValidationException $e) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Validasi gagal',
+                'errors' => $e->errors()
+            ], 422);
+        }
+
+        catch (\Exception $e) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Terjadi error saat login',
+                'error' => $e->getMessage()
+            ], 500);
+        }
     }
 }

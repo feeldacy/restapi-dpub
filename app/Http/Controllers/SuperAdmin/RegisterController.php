@@ -25,14 +25,14 @@ class RegisterController extends Controller
         try {
             $registerUserData = $request->validated();
 
-        $user = $this->userService->storeUserData($registerUserData);
+            $user = $this->userService->storeUserData($registerUserData);
 
-        $user->assignRole('superAdmin');
+            $user->assignRole('superAdmin');
 
-        return response()->json([
-            'message' => 'User Created ',
-            'status' => 'Success'
-        ], 201);
+            return response()->json([
+                'message' => 'User Created ',
+                'status' => 'Success'
+            ], 201);
         } catch (Exception $e) {
             return response()->json([
                 'message' => 'Terjadi error saat membuat akun',
